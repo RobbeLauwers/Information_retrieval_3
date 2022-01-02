@@ -11,5 +11,6 @@ for filename in filenames:
             writer = csv.writer(output_file)
             for row in reader:
                 # https://stackoverflow.com/a/1276774
-                writer.writerow([row[0],re.sub(r'[^a-zA-Z0-9 ]', '', row[1])])
+                # https://stackoverflow.com/a/1546244
+                writer.writerow([row[0],  re.sub(' +',' ',re.sub(r'[^a-zA-Z0-9 ]', '', row[1]))  ])
 
