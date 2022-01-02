@@ -1,0 +1,9 @@
+import mmh3
+
+def minhash(shingles_as_strings, amount_of_hashes):
+    minhashes = []
+    for hash_seed in range(amount_of_hashes):
+        temp_hashes = set(())
+        for shingle in shingles_as_strings:
+            temp_hashes.add(mmh3.hash(shingle,hash_seed))
+        minhashes.append(min(temp_hashes))
