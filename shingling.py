@@ -1,4 +1,4 @@
-def shingle(article, shingle_length, elements_returned_are_lists=True):
+def shingle(article, shingle_length, elements_returned_are_lists=False):
     article_tokens = article.split(' ')
     results = []
     for i in range(len(article_tokens)-(shingle_length-1)):
