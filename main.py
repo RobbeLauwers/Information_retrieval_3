@@ -3,13 +3,13 @@ import csv
 import minhash
 import shingling
 import candidate_pairs
+import numpy
 
 input_filename = "./data/news_articles_small_alphanumerical.csv"
 shingle_size = 2  # Amount of words in each shingle
-amount_of_hashes = 100  # Signature length M
-rows_per_band = 2  # r
-amount_of_bands = int(
-    amount_of_hashes / rows_per_band)  # It is assumed that the user ensures that this division results in an integer.
+rows_per_band = 16  # r
+amount_of_bands = 8 # b
+amount_of_hashes = amount_of_bands * rows_per_band  # Signature length M
 
 # TODO: calculate s
 # TODO: plot Jaccard
@@ -41,9 +41,35 @@ minhashes = {}
 for row in id_shingles:
     minhashes[row[0]] = minhash.minhash(row[1], amount_of_hashes)
 
+# Iterate over every pair in the dataset and perform LSH check
+potential_plagiarism = []
+for i in range(len(input_data)):
+    for j in range(i):
+        if candidate_pairs.is_candidate_pair(amount_of_hashes, rows_per_band, minhashes, input_data[i][0], input_data[j][0]):
+            potential_plagiarism.append((input_data[i][0], input_data[j][0]))
+
+# Calculate jaccard distance estimate from minhash using J = |A V B| / |A U B|
+j_distances = []
+for plagiarism_couple in potential_plagiarism:
+    intersect = set(minhashes[plagiarism_couple[0]]).intersection(set(minhashes[plagiarism_couple[1]]))
+    union = set(minhashes[plagiarism_couple[0]]).union(set(minhashes[plagiarism_couple[1]]))
+    jaccard_distance = len(intersect)/len(union)
+    j_distances.append(jaccard_distance)
+
+# Temporary statistics
+print(numpy.average(j_distances))
+print(numpy.median(j_distances))
+print(numpy.amax(j_distances))
+print(numpy.amin(j_distances))
+
+
+
 # TODO: Actually get the data we need from this.
 # Examples of checking if articles are candidate pairs/likely plagiarism.
 print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","458"))  # Jaccard > 0.93
+intersect = set(minhashes["84"]).intersection(set(minhashes["458"]))
+union = set(minhashes["84"]).union(set(minhashes["458"]))
+print(len(intersect)/len(union))
 print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","459"))  # Jaccard == 0.1
 
 # TODO: test more parameters (see top of file)
