@@ -2,6 +2,7 @@ import csv
 
 import minhash
 import shingling
+import candidate_pairs
 
 input_filename = "./data/news_articles_small_alphanumerical.csv"
 shingle_size = 2  # Amount of words in each shingle
@@ -11,6 +12,7 @@ amount_of_bands = int(
     amount_of_hashes / rows_per_band)  # It is assumed that the user ensures that this division results in an integer.
 
 # TODO: calculate s
+# TODO: plot Jaccard
 
 # List of lists. Each sublist has article id as first element and article contents as second element.
 input_data = []
@@ -39,4 +41,11 @@ minhashes = {}
 for row in id_shingles:
     minhashes[row[0]] = minhash.minhash(row[1], amount_of_hashes)
 
-# TODO: actually use LSH from candidate_pairs.py
+# TODO: Actually get the data we need from this.
+# Examples of checking if articles are candidate pairs/likely plagiarism.
+print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","458"))  # Jaccard > 0.93
+print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","459"))  # Jaccard == 0.1
+
+# TODO: test more parameters (see top of file)
+# TODO: compare to Jaccard ('...  here will be used as ground-truth data to evaluate the LSH system...')
+# TODO: make function to print result.csv
