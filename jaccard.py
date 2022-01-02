@@ -1,10 +1,10 @@
 import csv
 
+# Calculates Jaccard indexes for all pairs of articles that can be made with articles from the first file, writes them
+# to the second file.
 filenames = ["./data/news_articles_small_alphanumerical.csv","./data/news_articles_small_alphanumerical_jaccard.csv"]
 
 csv_list = []
-
-
 
 with open(filenames[0], 'r') as input_file:
     reader = csv.reader(input_file)

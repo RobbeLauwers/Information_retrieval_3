@@ -1,6 +1,8 @@
 import csv
 import re
 
+# Converts all articles in file to only keep alphanumerical characters and single spaces
+# For each sublist, the first file is input, the second is output.
 filenames = [["./data/news_articles_large.csv", "./data/news_articles_large_alphanumerical.csv"],
              ["./data/news_articles_small.csv", "./data/news_articles_small_alphanumerical.csv"]]
 

@@ -1,5 +1,6 @@
 import mmh3
 
+# Returns list of minimum hashes
 def minhash(shingles_as_strings, amount_of_hashes):
     minhashes = []
     for hash_seed in range(amount_of_hashes):
