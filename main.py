@@ -3,13 +3,12 @@ import csv
 import minhash
 import shingling
 import candidate_pairs
-import numpy
 
 input_filename = "./data/news_articles_small_alphanumerical.csv"
 output_filename = "./data/news_articles_small_alphanumerical_estimated_jaccard.csv"
-shingle_size = 1  # Amount of words in each shingle
-rows_per_band = 20  # r
-amount_of_bands = 50 # b
+shingle_size = 3  # Amount of words in each shingle
+rows_per_band = 8  # r
+amount_of_bands = 10 # b
 amount_of_hashes = amount_of_bands * rows_per_band  # Signature length M
 
 estimated_s = (1/amount_of_bands)**(1/rows_per_band) # Formula source
