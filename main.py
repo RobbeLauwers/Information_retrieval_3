@@ -3,7 +3,10 @@ import csv
 import minhash
 import shingling
 import candidate_pairs
+import signature_to_bucket
+import time
 
+use_actual_buckets = True
 input_filename = "./data/news_articles_small_alphanumerical.csv"
 output_filename = "./data/news_articles_small_alphanumerical_estimated_jaccard.csv"
 shingle_size = 3  # Amount of words in each shingle
@@ -32,6 +35,8 @@ with open(input_filename, 'r') as input_file:
 # List of lists. Each sublist has article id as first element and list of article shingles as second element.
 id_shingles = []
 
+start_shingling_time = time.time()
+
 # Create shingles
 for row in input_data:
     id_shingles.append([row[0], shingling.shingle(row[1], shingle_size)])
@@ -41,17 +46,33 @@ for row in input_data:
 # not changed. If you take element i of the minhashes of two articles, those were generated with the same hashfunction.
 minhashes = {}
 
+start_minhash_time = time.time()
+
 # Calculate minhashes
 for row in id_shingles:
     minhashes[row[0]] = minhash.minhash(row[1], amount_of_hashes)
 
+start_candidate_pair_time = time.time()
+
+
 # Iterate over every pair in the dataset and perform LSH check
 # TODO: Would this be faster if iterating over everything once and using actual buckets
 potential_plagiarism = []
-for i in range(len(input_data)):
-    for j in range(i):
-        if candidate_pairs.is_candidate_pair(amount_of_hashes, rows_per_band, minhashes, input_data[i][0], input_data[j][0]):
-            potential_plagiarism.append((input_data[i][0], input_data[j][0]))
+if not use_actual_buckets:
+    for i in range(len(input_data)):
+        for j in range(i):
+            if candidate_pairs.is_candidate_pair(amount_of_hashes, rows_per_band, minhashes, input_data[i][0], input_data[j][0]):
+                potential_plagiarism.append((input_data[i][0], input_data[j][0]))
+else:
+    bucket_data = signature_to_bucket.to_bucket(amount_of_hashes,rows_per_band,minhashes)
+    for band_nr, band in bucket_data.items():
+        for hash, IDs in band.items():
+            for i in range(len(IDs)):
+                for j in range(i):
+                    potential_plagiarism.append((input_data[int(IDs[i])][0], input_data[int(IDs[j])][0]))
+
+
+start_refine_time = time.time()
 
 # Refine plagiarism list by using
 # Calculate jaccard distance estimate from minhash using J = |A V B| / |A U B|-
@@ -61,6 +82,9 @@ for plagiarism_couple in potential_plagiarism:
     union = set(minhashes[plagiarism_couple[0]]).union(set(minhashes[plagiarism_couple[1]]))
     jaccard_distance = len(intersect)/len(union)
     plagiarism.append((plagiarism_couple, jaccard_distance))
+
+end_time = time.time()
+print("Runtime from shingling to finding candidate pairs: " + str(end_time - start_shingling_time))
 
 with open(output_filename,'w+',newline="\n") as output_file:
     writer = csv.writer(output_file)
