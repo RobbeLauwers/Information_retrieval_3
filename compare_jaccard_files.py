@@ -4,11 +4,9 @@ input_filename_1 = "./data/news_articles_small_alphanumerical_jaccard.csv"
 input_filename_2 = "./data/news_articles_small_alphanumerical_estimated_jaccard.csv"
 input_data1 = set()
 data1_dict = {}
-similarity1 = 0.8
+similarity1 = 0.75
 input_data2 = set()
 data2_dict = {}
-
-
 
 # Read input
 with open(input_filename_1, 'r') as input_file:
@@ -36,6 +34,8 @@ with open(input_filename_2, 'r') as input_file:
 
 print("Missing data:", input_data1.difference(input_data2))
 print("Excess data:", input_data2.difference(input_data1))
-
-for data in input_data1.difference(input_data2):
-    print(data, data1_dict[data])
+print("Precision:", len(input_data1.intersection(input_data2))/len(input_data2))
+print("Recall:", len(input_data1.intersection(input_data2))/len(input_data1))
+#
+# for data in input_data1.difference(input_data2):
+#     print(data, data1_dict[data])
