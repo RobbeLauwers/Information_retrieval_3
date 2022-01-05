@@ -55,14 +55,14 @@ for row in id_shingles:
 start_candidate_pair_time = time.time()
 
 
-# Iterate over every pair in the dataset and perform LSH check
-# TODO: Would this be faster if iterating over everything once and using actual buckets
+# Iterate over every pair in the dataset and compare bands
 potential_plagiarism = []
 if not use_actual_buckets:
     for i in range(len(input_data)):
         for j in range(i):
             if candidate_pairs.is_candidate_pair(amount_of_hashes, rows_per_band, minhashes, input_data[i][0], input_data[j][0]):
                 potential_plagiarism.append((input_data[i][0], input_data[j][0]))
+# Make buckets, then check each bucket for similar articles
 else:
     bucket_data = signature_to_bucket.to_bucket(amount_of_hashes,rows_per_band,minhashes)
     for band_nr, band in bucket_data.items():
@@ -94,14 +94,3 @@ with open(output_filename,'w+',newline="\n") as output_file:
         id2 = plagiarism[index][0][1]
         jaccard_estimate = plagiarism[index][1]
         writer.writerow([id1,id2,jaccard_estimate])
-
-
-
-# TODO: Actually get the data we need from this.
-# Examples of checking if articles are candidate pairs/likely plagiarism.
-print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","458"))  # Jaccard > 0.93
-print(candidate_pairs.is_candidate_pair(amount_of_hashes,rows_per_band,minhashes,"84","459"))  # Jaccard == 0.1
-
-# TODO: test more parameters (see top of file)
-# TODO: compare to Jaccard ('...  here will be used as ground-truth data to evaluate the LSH system...')
-# TODO: make function to print result.csv
