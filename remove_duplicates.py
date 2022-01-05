@@ -1,8 +1,6 @@
 import csv
-import re
 
-# Converts all articles in file to only keep alphanumerical characters and single spaces
-# For each sublist, the first file is input, the second is output.
+# Copies first two columns from first file to second file, removing duplicates. Adds headers expected in result.csv
 filename = ["./data/news_articles_large_alphanumerical_plagiarism.csv", "./result.csv"]
 
 # https://www.programiz.com/python-programming/csv
